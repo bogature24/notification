@@ -1,0 +1,82 @@
+##version: '3.9'
+##services:
+##  web:
+#    build: .
+#    command: python manage.py runserver 0.0.0.0:8000
+#    volumes:
+#      - .:/app
+#    ports:
+#      - "8000:8000"
+##  redis:
+##    image: redis:alpine
+##    ports:
+##      - "6379:6379"
+#
+#version: '3'
+#
+#services:
+#  web:
+#    build: .
+#    command: python manage.py runserver 0.0.0.0:8000
+#    volumes:
+#      - .:/app
+#    ports:
+#      - "8000:8000"
+#
+#  celery-worker:
+#    build: .
+#    command: celery -A my_project worker -l info
+#    volumes:
+#      - .:/app
+#    environment:
+#      - DJANGO_SETTINGS_MODULE=my_project.settings
+#    depends_on:
+#      - redis
+#
+#  celery-beat:
+#    build: .
+#    command: celery -A my_project beat -l info
+#    volumes:
+#      - .:/app
+#    environment:
+#      - DJANGO_SETTINGS_MODULE=my_project.settings
+#    depends_on:
+#      - redis
+#
+#volumes:
+#  redis:
+#    image: "redis:alpine"
+
+version: '3'
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+
+  celery-worker:
+    build: .
+    command: celery -A notification worker -l info
+    volumes:
+      - .:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=notification.settings
+    depends_on:
+      - redis
+
+  celery-beat:
+    build: .
+    command: celery -A notification beat -l info
+    volumes:
+      - .:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=notification.settings
+    depends_on:
+      - redis
+
+  redis:
+    image: "redis:alpine"
