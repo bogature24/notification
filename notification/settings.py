@@ -48,8 +48,7 @@ INSTALLED_APPS = [
 
 TELEGRAM_BOT = {
     "TOKEN": "5779478098:AAGWbsIU4Of2G_RWnUspWd5dx7YImFtyu-Y",
-    # "WEBHOOK_URL": "https://swap-face.xyz/telegram-bot/",
-    "WEBHOOK_URL": "https://swap-face.xyz/telegram-bot",
+    "WEBHOOK_URL": "https://swap-face.xyz/telegram-bot/",
 }
 
 MIDDLEWARE = [

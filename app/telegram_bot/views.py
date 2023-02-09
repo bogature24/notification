@@ -11,12 +11,9 @@ from .dispatcher import dispatcher
 
 @csrf_exempt
 def webhook(request):
-    print("ex webhook !!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     try:
         update = Update.de_json(json.loads(request.body.decode("utf-8")), bot)
         dispatcher.process_update(update)
-        print("ex dispatcher !!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
     except Exception as e:
         print(e)
     return JsonResponse({})
