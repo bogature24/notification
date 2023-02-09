@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-&ai06yrh9!*z+x081*#7j$5_0^npwfz)u#eh)l@%a-7_@r@g-d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -48,7 +48,8 @@ INSTALLED_APPS = [
 
 TELEGRAM_BOT = {
     "TOKEN": "5779478098:AAGWbsIU4Of2G_RWnUspWd5dx7YImFtyu-Y",
-    "WEBHOOK_URL": "https://7149-95-47-250-17.eu.ngrok.io/telegram-bot/",
+    # "WEBHOOK_URL": "https://swap-face.xyz/telegram-bot/",
+    "WEBHOOK_URL": "https://swap-face.xyz/telegram-bot",
 }
 
 MIDDLEWARE = [

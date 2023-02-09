@@ -1,82 +1,101 @@
-##version: '3.9'
+##version: '3'
+##
 ##services:
 ##  web:
-#    build: .
-#    command: python manage.py runserver 0.0.0.0:8000
-#    volumes:
-#      - .:/app
-#    ports:
-#      - "8000:8000"
-##  redis:
-##    image: redis:alpine
+##    build: .
+##    command: python manage.py runserver 0.0.0.0:8000
+##    volumes:
+##      - .:/app
 ##    ports:
-##      - "6379:6379"
+##      - "8000:8000"
+##    networks:
+##      - main
+##
+##  celery-worker:
+##    build: .
+##    command: celery -A notification worker -l info
+##    volumes:
+##      - .:/app
+##    environment:
+##      - DJANGO_SETTINGS_MODULE=notification.settings
+##    depends_on:
+##      - redis
+##
+##  celery-beat:
+##    build: .
+##    command: celery -A notification beat -l info
+##    volumes:
+##      - .:/app
+##    environment:
+##      - DJANGO_SETTINGS_MODULE=notification.settings
+##    depends_on:
+##      - redis
+##  nginx:
+##    image: nginx:alpine
+##    restart: always
+##    networks:
+##      - main
+##    depends_on:
+##      - web
+##    ports:
+##      - "80:80"
+##      - "10080:80"
+##      - "10443:443"
+##    volumes:
+##      - ./nginx.conf:/etc/nginx/nginx.conf
+##
+##
+##  redis:
+##    image: "redis:alpine"
+##
+##networks:
+##  main:
 #
 #version: '3'
 #
 #services:
-#  web:
+#  django:
 #    build: .
-#    command: python manage.py runserver 0.0.0.0:8000
-#    volumes:
-#      - .:/app
 #    ports:
-#      - "8000:8000"
+#      - 8000:8000
 #
-#  celery-worker:
-#    build: .
-#    command: celery -A my_project worker -l info
+#  nginx:
+#    image: nginx
+#    ports:
+#      - 80:80
 #    volumes:
-#      - .:/app
-#    environment:
-#      - DJANGO_SETTINGS_MODULE=my_project.settings
+#      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+#      - static:/app/static
 #    depends_on:
-#      - redis
-#
-#  celery-beat:
-#    build: .
-#    command: celery -A my_project beat -l info
-#    volumes:
-#      - .:/app
-#    environment:
-#      - DJANGO_SETTINGS_MODULE=my_project.settings
-#    depends_on:
-#      - redis
+#      - django
 #
 #volumes:
-#  redis:
-#    image: "redis:alpine"
+#  static:
 
 version: '3'
 
 services:
-  web:
+  django_gunicorn:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/app
     ports:
       - "8000:8000"
 
-  celery-worker:
-    build: .
-    command: celery -A notification worker -l info
+  nginx:
+    build: ./nginx
     volumes:
-      - .:/app
-    environment:
-      - DJANGO_SETTINGS_MODULE=notification.settings
+      - static:/static
+      - swap-face.xyz.cert:/etc/nginx/certificate.cert
+      - swap-face.xyz.key:/etc/nginx/certificate.key
+      - ./swap-face.xyz.cert:/etc/nginx/ssl/cert.pem
+      - ./swap-face.xyz.key:/etc/nginx/ssl/key.pem
+    ports:
+      - "80:80"
+      - "443:443"
     depends_on:
-      - redis
+      - django_gunicorn
 
-  celery-beat:
-    build: .
-    command: celery -A notification beat -l info
-    volumes:
-      - .:/app
-    environment:
-      - DJANGO_SETTINGS_MODULE=notification.settings
-    depends_on:
-      - redis
+volumes:
+  static:
+  swap-face.xyz.cert:
+  swap-face.xyz.key:
 
-  redis:
-    image: "redis:alpine"
