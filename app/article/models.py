@@ -3,10 +3,10 @@ import pytz
 from django.db import models
 from telegram import InlineKeyboardButton
 
-from app.article.tasks import add_task
 from app.article.utils import get_photo_link
 from app.telegram_bot.config import send_chunked_message
 from app.telegram_bot.bot import bot
+from app.user.models import TelegramChat
 
 
 class Category(models.Model):
@@ -66,16 +66,17 @@ class Article(models.Model):
         except:
             super().save(*args, **kwargs)
 
-        if self.scheduled_date and self.task_id == "":
-
-            task = add_task.apply_async((2, 2), eta=pytz.timezone('Europe/Moscow').localize(self.scheduled_date))
+        if self.scheduled_date and (self.task_id == "" or self.task_id == None):
+            print("start 123")
+            from app.article.tasks import add_task
+            task = add_task.apply_async((self.title, self.text, self.image_url, self.category.id, self.url), eta=pytz.timezone('Europe/Moscow').localize(self.scheduled_date))
             Article.objects.filter(id=self.id).update(task_id=str(task.task_id))
 
-        elif len(self.task_id) > 0 and self.revoke:
-
-            from celery.worker.control import revoke
-            revoke(task_id=self.task_id, terminate=True, state='PROGRESS')
-            Article.objects.filter(id=self.id).update(task_id=str(""), revoke=False)
+        # elif self.task_id != None and len(self.task_id) > 0 and self.revoke:
+        #
+        #     from celery.worker.control import revoke
+        #     revoke(task_id=self.task_id, terminate=True, state='PROGRESS')
+        #     Article.objects.filter(id=self.id).update(task_id=str(""), revoke=False)
 
 
 class HistoryArticleTask(models.Model):
@@ -85,3 +86,8 @@ class HistoryArticleTask(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class CategoryArticleTelegramChat(models.Model):
+    chat = models.ForeignKey(TelegramChat, null=True, blank=True, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.CASCADE)

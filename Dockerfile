@@ -121,6 +121,7 @@ COPY . .
 
 COPY swap-face.xyz.cert /etc/nginx/certificate.cert
 COPY swap-face.xyz.key /etc/nginx/certificate.key
+COPY static .
 
 # CMD gunicorn notification.wsgi:application --bind 0.0.0.0:8000
 COPY ./entrypoint.sh /

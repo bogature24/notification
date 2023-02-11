@@ -3,10 +3,10 @@ import json
 from django.shortcuts import get_object_or_404
 from telegram import KeyboardButton, ReplyKeyboardMarkup, Update, InlineKeyboardButton, InlineKeyboardMarkup
 
-from app.article.models import Category
+from app.article.models import Category, CategoryArticleTelegramChat
 from app.telegram_bot.bot import bot
 from app.telegram_bot.config import remove_message, send_chunked_message
-from app.user.models import CategoryArticleTelegramChat, TelegramChat
+from app.user.models import TelegramChat
 
 
 def open_start(user_id: int, context) -> None:

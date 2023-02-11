@@ -79,15 +79,19 @@ services:
     build: .
     ports:
       - "8000:8000"
+    volumes:
+      - static_files:/app/staticfiles
+      - ./static:/static
 
   nginx:
     build: ./nginx
     volumes:
-      - static:/static
       - swap-face.xyz.cert:/etc/nginx/certificate.cert
       - swap-face.xyz.key:/etc/nginx/certificate.key
       - ./swap-face.xyz.cert:/etc/nginx/ssl/cert.pem
       - ./swap-face.xyz.key:/etc/nginx/ssl/key.pem
+      - static_files:/app/staticfiles
+      - ./static:/static
     ports:
       - "80:80"
       - "443:443"
@@ -121,4 +125,5 @@ volumes:
   static:
   swap-face.xyz.cert:
   swap-face.xyz.key:
+  static_files:
 
